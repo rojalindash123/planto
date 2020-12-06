@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geocoder/services/base.dart';
@@ -65,30 +65,35 @@ class _GeocodeViewState extends State<GeocodeView> {
     }
   }
 
-  crudMethods crudObj = new crudMethods();
   @override
   Widget build(BuildContext context) {
-    return new Column(children: <Widget>[
-      new Card(
-        child: new Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: new Row(
-            children: <Widget>[
-              new Expanded(
-                child: new TextField(
-                  controller: _controller,
-                  decoration: new InputDecoration(hintText: "Enter an address"),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: Center(child: Text('Set address')),
+      ),
+      body: new Column(children: <Widget>[
+        new Card(
+          child: new Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: new Row(
+              children: <Widget>[
+                new Expanded(
+                  child: new TextField(
+                    controller: _controller,
+                    decoration:
+                        new InputDecoration(hintText: "Enter deliver address"),
+                  ),
                 ),
-              ),
-              new IconButton(
-                  icon: new Icon(Icons.search), onPressed: () => search()),
-              new IconButton(icon: Icon(Icons.done), onPressed: () {})
-            ],
+                new IconButton(
+                    icon: new Icon(Icons.restore), onPressed: () => search()),
+              ],
+            ),
           ),
         ),
-      ),
-      new Expanded(child: new AddressListView(this.isLoading, this.results)),
-    ]);
+        new Expanded(child: new AddressListView(this.isLoading, this.results)),
+      ]),
+    );
   }
 }
 
@@ -104,8 +109,6 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
       new TextEditingController();
   final TextEditingController _controllerLatitude = new TextEditingController();
 
-  _ReverseGeocodeViewState();
-
   List<Address> results = [];
 
   bool isLoading = false;
@@ -114,47 +117,18 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
     this.setState(() {
       this.isLoading = true;
     });
-
-    try {
-      var geocoding = AppState.of(context).mode;
-      var longitude = double.parse(_controllerLongitude.text);
-      var latitude = double.parse(_controllerLatitude.text);
-      var results = await geocoding
-          .findAddressesFromCoordinates(new Coordinates(latitude, longitude));
-      this.setState(() {
-        this.results = results;
-      });
-    } catch (e) {
-      print("Error occured: $e");
-    } finally {
-      this.setState(() {
-        this.isLoading = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(children: <Widget>[
-      new Expanded(child: new AddressListView(this.isLoading, this.results)),
-    ]);
+    // return new Column(children: <Widget>[
+    // new Expanded(child: new AddressListView(this.isLoading, this.results)),
+    // ]);
   }
 }
 
 class _MyAppState extends State<MyApp> {
   Geocoding geocoding = Geocoder.local;
-  crudMethods crudObj = new crudMethods();
-
-  final Map<String, Geocoding> modes = {
-    "Local": Geocoder.local,
-    "Google (distant)": Geocoder.google("<API-KEY>"),
-  };
-
-  void _changeMode(Geocoding mode) {
-    this.setState(() {
-      geocoding = mode;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,24 +138,6 @@ class _MyAppState extends State<MyApp> {
         home: new DefaultTabController(
           length: 2,
           child: new Scaffold(
-            appBar: new AppBar(
-              title: new Text('Geocoder'),
-              actions: <Widget>[
-                new PopupMenuButton<Geocoding>(
-                  // overflow menu
-                  onSelected: _changeMode,
-                  itemBuilder: (BuildContext context) {
-                    return modes.keys.map((String mode) {
-                      return new CheckedPopupMenuItem<Geocoding>(
-                        checked: modes[mode] == this.geocoding,
-                        value: modes[mode],
-                        child: new Text(mode),
-                      );
-                    }).toList();
-                  },
-                ),
-              ],
-            ),
             body: Container(
               child: new TabBarView(children: <Widget>[
                 new GeocodeView(),
@@ -195,14 +151,16 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class AddressTile extends StatelessWidget {
+class AddressTile extends StatefulWidget {
   final Address address;
 
   AddressTile(this.address);
 
-  final titleStyle =
-      const TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold);
+  @override
+  _AddressTileState createState() => _AddressTileState();
+}
 
+class _AddressTileState extends State<AddressTile> {
   @override
   Widget build(BuildContext context) {
     return new Padding(
@@ -210,27 +168,40 @@ class AddressTile extends StatelessWidget {
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new ErrorLabel(
-            "feature name",
-            this.address.featureName,
-            fontSize: 15.0,
-            isBold: true,
-          ),
-          new ErrorLabel("address lines", this.address.addressLine),
-          new ErrorLabel("country name", this.address.countryName),
-          new ErrorLabel("locality", this.address.locality),
-          new ErrorLabel("sub-locality", this.address.subLocality),
-          new ErrorLabel("admin-area", this.address.adminArea),
-          new ErrorLabel("sub-admin-area", this.address.subAdminArea),
-          new ErrorLabel("thoroughfare", this.address.thoroughfare),
-          new ErrorLabel("sub-thoroughfare", this.address.subThoroughfare),
-          new ErrorLabel("postal code", this.address.postalCode),
-          this.address.coordinates != null
-              ? new ErrorLabel("", this.address.coordinates.toString())
-              : new ErrorLabel("coordinates", null),
+          // new Text(this.widget.address.coordinates.latitude.toString()),
+          //   new Text(this.widget.address.coordinates.longitude.toString()),
+
+          RaisedButton(
+            onPressed: () async {
+              await Firestore.instance.collection('location').add({
+                'lat': this.widget.address.coordinates.latitude.toString(),
+                'long': this.widget.address.coordinates.longitude.toString()
+              }).then((result) => dialogTrigger(context));
+            },
+            child: Center(child: Text('Set address')),
+          )
         ],
       ),
     );
+  }
+
+  Future<bool> dialogTrigger(BuildContext context) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Your Order has been Placed',
+                style: TextStyle(fontSize: 15.0)),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Alright"))
+            ],
+          );
+        });
   }
 }
 
@@ -251,24 +222,5 @@ class AddressListView extends StatelessWidget {
       itemCount: this.addresses.length,
       itemBuilder: (c, i) => new AddressTile(this.addresses[i]),
     );
-  }
-}
-
-class ErrorLabel extends StatelessWidget {
-  final String name, text;
-
-  final TextStyle descriptionStyle;
-
-  ErrorLabel(this.name, String text,
-      {double fontSize = 9.0, bool isBold = false})
-      : this.text = text ?? "Unknown $name",
-        this.descriptionStyle = new TextStyle(
-            fontSize: fontSize,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: text == null ? Colors.red : Colors.black);
-
-  @override
-  Widget build(BuildContext context) {
-    return new Text(this.text, style: descriptionStyle);
   }
 }

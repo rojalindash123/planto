@@ -14,6 +14,7 @@ class _feedbackState extends State<feedback> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.teal,
       appBar: AppBar(
         title: new Text('Feedback'),
@@ -56,24 +57,30 @@ class _feedbackState extends State<feedback> {
                       this.feedaback = value;
                     },
                   ),
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    color: Colors.teal,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      crudObj.addFeedback({
-                        'name': this.name,
-                        'email': this.email,
-                        'feedback': this.feedaback
-                      }).then((result) {
-                        dialogTrigger(context);
-                      }).catchError((e) {
-                        print(e);
-                      });
-                    },
-                    child: Text('Submit'),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  Container(
+                    // margin: EdgeInsets.all(15.0),
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      color: Colors.red,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        crudObj.addFeedback({
+                          'name': this.name,
+                          'email': this.email,
+                          'feedback': this.feedaback
+                        }).then((result) {
+                          dialogTrigger(context);
+                        }).catchError((e) {
+                          print(e);
+                        });
+                      },
+                      child: Text('Submit'),
+                    ),
                   )
                 ],
               ),
@@ -90,7 +97,7 @@ class _feedbackState extends State<feedback> {
         builder: (BuildContext context) {
           return AlertDialog(
             title:
-                Text('Thanks for Comment ', style: TextStyle(fontSize: 15.0)),
+                Text('Thanks for Feedback ', style: TextStyle(fontSize: 15.0)),
             actions: <Widget>[
               Icon(Icons.done_all),
               FlatButton(

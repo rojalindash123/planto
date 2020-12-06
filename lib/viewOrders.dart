@@ -11,77 +11,103 @@ class _viewOrdersState extends State<viewOrders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal,
+      backgroundColor: Colors.white,
       appBar:
-          AppBar(title: new Text('View Orders'), backgroundColor: Colors.teal),
+          AppBar(title: new Text('View Orders'), backgroundColor: Colors.red),
       body: StreamBuilder(
           stream: Firestore.instance.collection('Orders').snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return Text('Loading..');
-            return Column(
-              children: <Widget>[
-                Padding(padding: EdgeInsets.only(top: 20)),
-                Row(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 140, top: 30)),
-                    Icon(Icons.shopping_cart, color: Colors.white60, size: 80)
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 100, top: 30)),
-                    new Text(
-                      'Piece Required: ',
+            return Column(children: <Widget>[
+              // for (var i = 0; i < 10; i++){
+
+              Padding(padding: EdgeInsets.only(top: 20)),
+              Row(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.only(left: 110, top: 200)),
+                  Icon(Icons.add_shopping_cart, color: Colors.red, size: 120)
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.only(left: 20, top: 30)),
+                  new Text(
+                    'Product name: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 15),
+                  ),
+                  Text(
+                    snapshot.data.documents[0]['product name'],
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.only(left: 20, top: 30)),
+                  new Text(
+                    'Piece Required: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 12),
+                  ),
+                  Text(
+                    snapshot.data.documents[0]['Piece'],
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        fontSize: 12),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.only(left: 20, top: 30)),
+                  new Text(
+                    'Price: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 12),
+                  ),
+                  Text(
+                    snapshot.data.documents[0]['price'].toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 12),
+                  ),
+                ],
+              ),
+              // }
+              // ]);
+              Row(
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(left: 120, top: 30, bottom: 30)),
+                  RaisedButton(
+                    child: Text(
+                      'View Details',
                       style: TextStyle(
+                          color: Colors.red,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                           fontSize: 20),
                     ),
-                    Text(
-                      snapshot.data.documents[0]['Piece Required'],
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 120, top: 30)),
-                    new Text(
-                      'Purpose: ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
-                    ),
-                    Text(
-                      snapshot.data.documents[0]['Purpose'],
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                        padding:
-                            EdgeInsets.only(left: 120, top: 30, bottom: 30)),
-                    RaisedButton(
-                      child: Text('View Details'),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      // color: Colors.teal,
-                      // textColor: Colors.white,
-                      onPressed: NavigateToViewBuyer,
-                    )
-                  ],
-                )
-              ],
-            );
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    // color: Colors.teal,
+                    // textColor: Colors.white,
+                    onPressed: NavigateToViewBuyer,
+                  )
+                ],
+              )
+            ]);
           }),
     );
   }

@@ -8,9 +8,8 @@ class myAppPlanto extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Welcome',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(primarySwatch: Colors.red),
       home: welcome(),
     );
   }
 }
-

@@ -32,6 +32,19 @@ dependencies:
   geocoder: ^0.2.1
   flutter_google_places: ^0.2.5
   google_maps_webservice: ^0.0.17
+  uuid: ^2.2.2
+  image_picker: ^0.6.7+14
+  flutter_typeahead: ^1.8.8
+  fluttertoast: ^7.1.2
+  # rxdart: 
+  # geoflutterfire: 
+
+
+  google_maps_flutter:
+
+  firebase_storage: 
+  firebase_database: 
+  
 
 
   # location_permissions: ^3.0.0+1
@@ -74,6 +87,11 @@ flutter:
     - images/begonia.jpg
     - images/cannaLily.jpg
     - images/cardinalClimber.jpg
+    - images/back2.jpg
+    - images/download.png
+    - images/google.png
+    - images/back5.jpg
+    - images/back6.jpg
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg
 

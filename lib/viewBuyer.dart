@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:planto/geolocation.dart';
 import 'package:planto/home.dart';
 import 'package:planto/map.dart';
+import 'package:planto/utils/mapUpdated.dart';
 import 'package:planto/map2.dart';
+import 'package:planto/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:planto/provider.dart';
 
 class viewBuyer extends StatefulWidget {
   @override
@@ -14,10 +18,10 @@ class _viewBuyerState extends State<viewBuyer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal,
+      backgroundColor: Colors.red,
       appBar: AppBar(
         title: new Text('Order From'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.red,
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.location_searching), onPressed: NavigateToMap)
@@ -29,94 +33,99 @@ class _viewBuyerState extends State<viewBuyer> {
             if (!snapshot.hasData) return Text('Loading..');
             return Column(
               children: <Widget>[
-                Padding(padding: EdgeInsets.only(top: 20)),
-                Row(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 120, top: 30)),
-                    Icon(
-                      Icons.account_circle,
-                      size: 100,
-                      color: Colors.white,
-                    )
-                  ],
+                Padding(padding: EdgeInsets.only(top: 10)),
+                Container(
+                  height: 200,
+                  child: Card(
+                    margin: EdgeInsets.only(left: 10, right: 10),
+                    child: Row(
+                      children: <Widget>[
+                        Padding(padding: EdgeInsets.only(left: 120, top: 30)),
+                        Icon(
+                          Icons.account_circle,
+                          size: 100,
+                          color: Colors.red,
+                        )
+                      ],
+                    ),
+                  ),
                 ),
                 Row(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 80, top: 30)),
-                    new Text(
-                      'Name : ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
+                    Padding(padding: EdgeInsets.only(left: 20, top: 50)),
+                    // new Text(
+                    //   'Name : ',
+                    //   style: TextStyle(
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       fontSize: 15),
+                    // ),
+                    new Container(
+                      child: Icon(Icons.person),
+                    ),
+                    SizedBox(
+                      width: 20,
                     ),
                     Text(
                       snapshot.data.documents[0]['name'],
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontSize: 20),
+                          fontSize: 15),
                     ),
                   ],
                 ),
                 Row(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 100, top: 30)),
-                    new Text(
-                      'Address : ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
+                    Padding(padding: EdgeInsets.only(left: 20, top: 30)),
+                    new Container(
+                      child: Icon(Icons.phone_android),
                     ),
-                    Text(
-                      snapshot.data.documents[0]['address'],
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 80, top: 30)),
-                    new Text(
-                      'Mobile No : ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20),
+                    // new Text(
+                    //   'Mobile No : ',
+                    //   style: TextStyle(
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       fontSize: 12),
+                    // ),
+                    SizedBox(
+                      width: 20,
                     ),
                     Text(
                       snapshot.data.documents[0]['mobile'],
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontSize: 20),
+                          fontSize: 15),
                     ),
                   ],
                 ),
                 Row(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left: 120, top: 80)),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      // color: Colors.teal,
-                      // textColor: Colors.white,
-                      child: Text('Confirm Order'),
-                      onPressed: NavigateToStock,
+                    Padding(padding: EdgeInsets.only(left: 20, top: 50)),
+                    new Container(
+                      child: Icon(Icons.location_city),
                     ),
+                    // new Text(
+                    //   'Address : ',
+                    //   style: TextStyle(
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       fontSize: 12),
+                    // ),
                     SizedBox(
-                      height: 10,
+                      width: 20,
+                      height: 20,
                     ),
-                    // RaisedButton(
-                    //   child: Text('view location'),
-                    //   onPressed: NavigateToMap,
-                    // )
+                    Text(
+                      snapshot.data.documents[0]['address'],
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
                   ],
-                )
+                ),
               ],
             );
           }),
@@ -128,6 +137,15 @@ class _viewBuyerState extends State<viewBuyer> {
   }
 
   void NavigateToMap() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => mapRo2()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => mapupdate()));
+  }
+
+  Future<void> getUserDoc() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    final uid = await Provider.of(context).auth.getCurrentUID();
+    return uid;
   }
 }

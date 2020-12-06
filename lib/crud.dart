@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class crudMethods {
   bool isLoggedIn() {
@@ -12,12 +13,24 @@ class crudMethods {
     }
   }
 
-  Future<void> addData(profileSeller) async {
+  final String uid;
+  crudMethods({this.uid});
+
+  Future<void> getCurrentUID() async {
+    // return (await FirebaseAuth.instance.currentUser()).uid;
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final String uid = user.uid.toString();
+    return uid;
+  }
+
+  Widget displayinfo(context, snapshot) {
+    final user = snapshot.data;
+    return user;
+  }
+
+  Future<void> addData(name) async {
     if (isLoggedIn()) {
-      Firestore.instance
-          .collection('ProfileSeller')
-          .add(profileSeller)
-          .catchError((e) {
+      Firestore.instance.collection('ProfileSeller').add(name).catchError((e) {
         print(e);
       });
     } else {
@@ -82,6 +95,16 @@ class crudMethods {
     }
   }
 
+  Future<void> addWishlist(wishlist) async {
+    if (isLoggedIn()) {
+      Firestore.instance.collection('wishlist').add(wishlist).catchError((e) {
+        print(e);
+      });
+    } else {
+      print("Login first");
+    }
+  }
+
   getData() async {
     return await Firestore.instance.collection('ProfileSeller').snapshots();
   }
@@ -104,5 +127,30 @@ class crudMethods {
         .catchError((e) {
       print(e);
     });
+  }
+}
+
+class UserManagement {
+  storeNewUser(user, context) {
+    Firestore.instance
+        .collection('/users')
+        .add({'email': user.email, 'uid': user.uid}).then((value) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/home');
+    }).catchError((e) {
+      print(e);
+    });
+  }
+}
+
+class DatabaseService {
+  final String uid;
+  DatabaseService({this.uid});
+  final CollectionReference newCollection =
+      Firestore.instance.collection('ProfileSeller');
+  Future updateUserData(String name, String mobile, String address) async {
+    return await newCollection
+        .document(uid)
+        .setData({'name': name, 'mobile': mobile, 'address': address});
   }
 }

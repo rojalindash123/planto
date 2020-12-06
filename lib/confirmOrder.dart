@@ -20,22 +20,37 @@ class _confirmOrderState extends State<confirmOrder> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return Text('Loading..');
               return Container(
-                margin: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage("images/back2.jpg"), // <-- BACKGROUND IMAGE
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                // margin: EdgeInsets.only(top: 10),
                 padding: EdgeInsets.only(
-                  left: 30,
-                  right: 30,
-                  top: 30,
+                  left: 50,
+                  right: 40,
+                  top: 80,
                 ),
                 child: Column(
                   children: <Widget>[
                     TextField(
-                      decoration: InputDecoration(labelText: "Piece Required"),
+                      decoration: InputDecoration(
+                          labelText: "Piece Required",
+                          // prefixIcon: Icon(Icons.),
+                          border: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(25.0))),
                       onChanged: (value) {
                         this.piece = value;
                       },
                     ),
+                    SizedBox(height: 10),
                     TextField(
-                      decoration: InputDecoration(labelText: "Purpose"),
+                      decoration: InputDecoration(
+                          labelText: "Purpose",
+                          border: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(25.0))),
                       onChanged: (value) {
                         this.purpose = value;
                       },
